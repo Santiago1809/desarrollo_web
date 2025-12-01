@@ -1,26 +1,64 @@
 import { Injectable } from '@nestjs/common';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
+import { RegisterDto } from './dto/create-auth.dto';
+import { LoginDto } from './dto/update-auth.dto';
+import { BcryptService } from 'src/utils/bcrypt.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User } from 'src/entities/user.entity';
+import { Repository } from 'typeorm';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
-  create(createAuthDto: CreateAuthDto) {
-    return 'This action adds a new auth';
+  constructor(
+    private readonly bcryptService: BcryptService,
+    @InjectRepository(User) private readonly userRepository: Repository<User>,
+    private readonly jwtService: JwtService,
+  ) {}
+  async registerUser(data: RegisterDto) {
+    const hashedPassword = await this.bcryptService.hashPassword(data.password);
+    const newUser = this.userRepository.create({
+      name: data.name,
+      email: data.email,
+      password: hashedPassword,
+    });
+    const savedUser = await this.userRepository.save(newUser);
+    const accessToken = this.jwtService.sign({
+      id: savedUser.id,
+      name: savedUser.name,
+      email: savedUser.email,
+    });
+    return {
+      ...savedUser,
+      password: undefined,
+      accessToken,
+    };
   }
 
-  findAll() {
-    return `This action returns all auth`;
+  async login(data: LoginDto) {
+    const user = await this.findUserByEmail(data.email);
+    if (!user) {
+      return 'User not found';
+    }
+    const isPasswordValid = await this.bcryptService.comparePassword(
+      data.password,
+      user.password,
+    );
+    if (!isPasswordValid) {
+      return 'Invalid password';
+    }
+    const accessToken = this.jwtService.sign({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+    });
+    return {
+      ...user,
+      password: undefined,
+      accessToken,
+    };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
-  }
-
-  update(id: number, updateAuthDto: UpdateAuthDto) {
-    return `This action updates a #${id} auth`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
+  private async findUserByEmail(email: string): Promise<User | null> {
+    return this.userRepository.findOne({ where: { email } });
   }
 }
