@@ -1,5 +1,7 @@
 import * as bcrypt from 'bcrypt';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class BcryptService {
   private readonly saltRounds = 10;
 

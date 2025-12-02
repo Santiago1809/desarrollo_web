@@ -4,6 +4,10 @@ import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
+import { AppointmentsModule } from './appointments/appointments.module';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { RefreshTokenInterceptor } from './shared/interceptors/refresh-token/refresh-token.interceptor';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -25,9 +29,23 @@ import { AuthModule } from './auth/auth.module';
         logger: 'formatted-console',
       }),
     }),
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        secret: configService.get<string>('JWT_SECRET'),
+      }),
+      inject: [ConfigService],
+    }),
     AuthModule,
+    AppointmentsModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: RefreshTokenInterceptor,
+    },
+  ],
 })
 export class AppModule {}
