@@ -8,6 +8,16 @@ import { AppointmentRating } from 'src/entities/appointment-rating.entity';
 import { AppointmentService } from 'src/entities/appointment-service.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { User } from 'src/entities/user.entity';
+import { Service } from 'src/entities/service.entity';
+import { BarberSchedule } from 'src/entities/barber-schedule.entity';
+import { BarberDateSchedule } from 'src/entities/barber-date-schedule.entity';
+import { BarberBreak } from 'src/entities/barber-break.entity';
+import {
+  BarberScheduleService,
+  AppointmentValidationService,
+  BarberAvailabilityService,
+} from './services';
 
 @Module({
   imports: [
@@ -16,6 +26,11 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       AppointmentParticipant,
       AppointmentRating,
       AppointmentService,
+      User,
+      Service,
+      BarberSchedule,
+      BarberDateSchedule,
+      BarberBreak,
     ]),
     JwtModule.registerAsync({
       imports: [ConfigModule],
@@ -26,6 +41,11 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     }),
   ],
   controllers: [AppointmentsController],
-  providers: [AppointmentsService],
+  providers: [
+    AppointmentsService,
+    BarberScheduleService,
+    AppointmentValidationService,
+    BarberAvailabilityService,
+  ],
 })
 export class AppointmentsModule {}

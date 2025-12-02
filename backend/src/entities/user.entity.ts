@@ -18,14 +18,21 @@ import { Inventory } from './inventory.entity';
 export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
+
   @Column()
   name: string;
+
   @Column()
   email: string;
+
   @Column()
   password: string;
+
   @Column({ default: 1 })
   role: number;
+
+  @Column({ unique: true })
+  dni: string;
 
   @ManyToOne(() => Role, (role) => role.users, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'role' })

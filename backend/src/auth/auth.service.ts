@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { RegisterDto } from './dto/create-auth.dto';
-import { LoginDto } from './dto/update-auth.dto';
+import { RegisterDto } from './dto/register.dto';
+import { LoginDto } from './dto/login.dto';
 import { BcryptService } from 'src/utils/bcrypt.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
@@ -20,6 +20,7 @@ export class AuthService {
       name: data.name,
       email: data.email,
       password: hashedPassword,
+      dni: data.dni,
     });
     const savedUser = await this.userRepository.save(newUser);
     const accessToken = this.jwtService.sign({

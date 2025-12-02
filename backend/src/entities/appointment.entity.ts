@@ -26,6 +26,9 @@ export class Appointment {
   })
   state: string;
 
+  @Column({ type: 'double precision' })
+  totalPrice: number;
+
   @OneToMany(
     () => AppointmentParticipant,
     (participant) => participant.appointment,

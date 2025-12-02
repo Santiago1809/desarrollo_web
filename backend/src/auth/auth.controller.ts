@@ -1,7 +1,7 @@
 import { Body, Controller, Post, UseGuards, Req } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { RegisterDto } from './dto/create-auth.dto';
-import { LoginDto } from './dto/update-auth.dto';
+import { RegisterDto } from './dto/register.dto';
+import { LoginDto } from './dto/login.dto';
 import { AuthGuard } from 'src/shared/guards/auth/auth.guard';
 import { CustomRequest } from 'src/shared/interfaces';
 
