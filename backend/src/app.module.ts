@@ -31,9 +31,9 @@ import { JwtModule } from '@nestjs/jwt';
         entities: ['dist/entities/*.entity.js'],
         synchronize: true,
         logger: 'formatted-console',
-        /* ssl: {
-          rejectUnauthorized: process.env.NODE_ENV === 'production',
-        }, */
+        ssl: {
+          rejectUnauthorized: false,
+        },
       }),
     }),
     JwtModule.registerAsync({
