@@ -8,7 +8,10 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.enableCors({
     allowedHeaders: ['Content-Type', 'Authorization'],
-    origin: 'http://localhost:3000',
+    origin: [
+      'http://localhost:3000',
+      'https://desarrollo-web-hazel.vercel.app',
+    ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
     exposedHeaders: [
