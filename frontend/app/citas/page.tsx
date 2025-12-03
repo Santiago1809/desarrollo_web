@@ -8,7 +8,9 @@ import {
   useRescheduleAppointment,
   useBarberAvailability,
   useCancelAppointment,
+  useCompleteAppointment,
 } from "@/lib/hooks/useAppointments";
+import { useCanRateAppointment } from "@/lib/hooks/useRatings";
 import { USER_ROLES } from "@/lib/types/appointments";
 import type { Appointment } from "@/lib/types/appointments";
 import {
@@ -23,6 +25,8 @@ import {
   ChevronLeft,
   ChevronRight,
   Trash2,
+  CheckCircle,
+  Star,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -30,6 +34,7 @@ import { useEffect, useState, useMemo } from "react";
 import { addDays, format } from "date-fns";
 import { es } from "date-fns/locale";
 import Navbar from "../components/Navbar";
+import RatingModal from "../components/RatingModal";
 
 /**
  * Parses a date string safely to avoid timezone issues
@@ -44,30 +49,45 @@ function AppointmentCard({
   appointment,
   onReschedule,
   onCancel,
+  onComplete,
+  onRate,
+  userRole,
 }: {
   readonly appointment: Appointment;
   readonly onReschedule: (appointment: Appointment) => void;
   readonly onCancel: (appointment: Appointment) => void;
+  readonly onComplete: (appointment: Appointment) => void;
+  readonly onRate: (appointment: Appointment) => void;
+  readonly userRole: number;
 }) {
   const barber = appointment.participants.find((p) => p.role === "barber");
   const client = appointment.participants.find((p) => p.role === "client");
 
-  const stateColors = {
+  const { data: canRateData } = useCanRateAppointment(appointment.id);
+
+  const stateColors: Record<string, string> = {
     scheduled:
       "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
     cancelled: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
     reschedulled:
       "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400",
+    completed:
+      "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400",
   };
 
-  const stateLabels = {
+  const stateLabels: Record<string, string> = {
     scheduled: "Programada",
     cancelled: "Cancelada",
     reschedulled: "Reprogramada",
+    completed: "Completada",
   };
 
   const canModify =
     appointment.state === "scheduled" || appointment.state === "reschedulled";
+  const isCompleted = appointment.state === "completed";
+  const isBarber = userRole === USER_ROLES.BARBER;
+  const isClient = userRole === USER_ROLES.CLIENT;
+  const canRate = isClient && isCompleted && canRateData?.canRate;
 
   return (
     <div className="bg-white dark:bg-zinc-900 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-800 p-6 hover:shadow-md transition-shadow">
@@ -135,6 +155,16 @@ function AppointmentCard({
 
       {canModify && (
         <div className="mt-4 pt-4 border-t border-zinc-200 dark:border-zinc-800 flex gap-2">
+          {isBarber && (
+            <button
+              type="button"
+              onClick={() => onComplete(appointment)}
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 rounded-lg hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors"
+            >
+              <CheckCircle className="h-4 w-4" />
+              Completar
+            </button>
+          )}
           <button
             type="button"
             onClick={() => onReschedule(appointment)}
@@ -151,6 +181,28 @@ function AppointmentCard({
             <Trash2 className="h-4 w-4" />
             Cancelar
           </button>
+        </div>
+      )}
+
+      {canRate && (
+        <div className="mt-4 pt-4 border-t border-zinc-200 dark:border-zinc-800">
+          <button
+            type="button"
+            onClick={() => onRate(appointment)}
+            className="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 rounded-lg hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors"
+          >
+            <Star className="h-4 w-4" />
+            Calificar Servicio
+          </button>
+        </div>
+      )}
+
+      {isCompleted && !canRate && isClient && (
+        <div className="mt-4 pt-4 border-t border-zinc-200 dark:border-zinc-800">
+          <p className="text-sm text-center text-zinc-500 dark:text-zinc-400 flex items-center justify-center gap-2">
+            <CheckCircle className="h-4 w-4 text-green-500" />
+            Ya calificaste este servicio
+          </p>
         </div>
       )}
     </div>
@@ -590,12 +642,18 @@ function AppointmentsList({
   error,
   onReschedule,
   onCancel,
+  onComplete,
+  onRate,
+  userRole,
 }: {
   readonly appointments: Appointment[] | undefined;
   readonly isLoading: boolean;
   readonly error: Error | null;
   readonly onReschedule: (appointment: Appointment) => void;
   readonly onCancel: (appointment: Appointment) => void;
+  readonly onComplete: (appointment: Appointment) => void;
+  readonly onRate: (appointment: Appointment) => void;
+  readonly userRole: number;
 }) {
   if (isLoading) {
     return (
@@ -643,6 +701,9 @@ function AppointmentsList({
           appointment={appointment}
           onReschedule={onReschedule}
           onCancel={onCancel}
+          onComplete={onComplete}
+          onRate={onRate}
+          userRole={userRole}
         />
       ))}
     </div>
@@ -656,6 +717,10 @@ export default function CitasPage() {
     useState<Appointment | null>(null);
   const [cancelAppointment, setCancelAppointment] =
     useState<Appointment | null>(null);
+  const [ratingAppointment, setRatingAppointment] =
+    useState<Appointment | null>(null);
+
+  const completeAppointmentMutation = useCompleteAppointment();
 
   // Determine which query to use based on role
   const isClient = user?.role === USER_ROLES.CLIENT;
@@ -680,6 +745,15 @@ export default function CitasPage() {
 
   const handleCancelSuccess = () => {
     activeQuery.refetch();
+  };
+
+  const handleCompleteAppointment = async (appointment: Appointment) => {
+    if (!confirm("¿Estás seguro de que deseas marcar esta cita como completada?")) return;
+    try {
+      await completeAppointmentMutation.mutateAsync(appointment.id);
+    } catch (error) {
+      console.error("Error al completar la cita:", error);
+    }
   };
 
   useEffect(() => {
@@ -749,6 +823,9 @@ export default function CitasPage() {
           error={activeQuery.error}
           onReschedule={setRescheduleAppointment}
           onCancel={setCancelAppointment}
+          onComplete={handleCompleteAppointment}
+          onRate={setRatingAppointment}
+          userRole={user?.role || USER_ROLES.CLIENT}
         />
       </main>
 
@@ -767,6 +844,21 @@ export default function CitasPage() {
           appointment={cancelAppointment}
           onClose={() => setCancelAppointment(null)}
           onSuccess={handleCancelSuccess}
+        />
+      )}
+
+      {/* Rating Modal */}
+      {ratingAppointment && (
+        <RatingModal
+          isOpen={true}
+          onClose={() => setRatingAppointment(null)}
+          appointmentId={ratingAppointment.id}
+          barberName={
+            ratingAppointment.participants.find((p) => p.role === "barber")?.user?.name || "Barbero"
+          }
+          serviceName={
+            ratingAppointment.services.map((s) => s.service?.name).join(", ") || "Servicio"
+          }
         />
       )}
     </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Menu, X, Scissors, User, LogOut, Calendar } from "lucide-react";
+import { Menu, X, Scissors, User, LogOut, Calendar, HelpCircle } from "lucide-react";
 import Link from "next/link";
 import { useAuthContext } from "@/app/contexts/AuthContext";
 
@@ -147,11 +147,11 @@ export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const navLinks = [
-    { href: "#servicios", label: "Servicios" },
-    { href: "#nosotros", label: "Nosotros" },
-    { href: "#barberos", label: "Barberos" },
-    { href: "#testimonios", label: "Testimonios" },
-    { href: "#contacto", label: "Contacto" },
+    { href: "/#servicios", label: "Servicios" },
+    { href: "/#nosotros", label: "Nosotros" },
+    { href: "/#barberos", label: "Barberos" },
+    { href: "/#testimonios", label: "Testimonios" },
+    { href: "/#contacto", label: "Contacto" },
   ];
 
   return (

@@ -70,6 +70,18 @@ export function useCancelAppointment() {
   });
 }
 
+export function useCompleteAppointment() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (appointmentId: string) =>
+      appointmentsService.completeAppointment(appointmentId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["appointments"] });
+    },
+  });
+}
+
 // ==================== HORARIOS DEL BARBERO ====================
 
 export function useBarberSchedule(barberId: string | undefined) {

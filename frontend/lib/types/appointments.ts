@@ -46,7 +46,7 @@ export interface Appointment {
   id: string;
   date: string;
   hour: string;
-  state: "scheduled" | "cancelled" | "reschedulled";
+  state: "scheduled" | "cancelled" | "reschedulled" | "completed";
   totalPrice: number;
   participants: AppointmentParticipant[];
   services: AppointmentServiceItem[];

@@ -60,6 +60,14 @@ export const appointmentsService = {
     return response.data;
   },
 
+  // Completar una cita (solo barbero)
+  completeAppointment: async (appointmentId: string): Promise<Appointment> => {
+    const response = await api.patch<Appointment>(
+      `/appointments/complete/${appointmentId}`
+    );
+    return response.data;
+  },
+
   // ==================== HORARIOS DEL BARBERO ====================
 
   // Agregar horario semanal del barbero

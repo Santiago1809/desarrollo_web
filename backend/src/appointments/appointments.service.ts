@@ -624,6 +624,53 @@ export class AppointmentsService {
     return appointment;
   }
 
+  // ==================== APPOINTMENT COMPLETION ====================
+
+  /**
+   * Marks an appointment as completed (barber only)
+   */
+  async completeAppointment(userId: string, appointmentId: string) {
+    const appointment = await this.appointmentRepository.findOne({
+      where: { id: appointmentId },
+      relations: [
+        'participants',
+        'participants.user',
+        'services',
+        'services.service',
+      ],
+    });
+
+    if (!appointment) {
+      throw new BadRequestException('Appointment not found');
+    }
+
+    if (
+      appointment.state !== 'scheduled' &&
+      appointment.state !== 'reschedulled'
+    ) {
+      throw new BadRequestException(
+        'Only scheduled appointments can be marked as completed',
+      );
+    }
+
+    // Only the barber can mark as completed
+    const barberParticipant = appointment.participants.find(
+      (p) => p.role === 'barber' && p.user.id === userId,
+    );
+
+    if (!barberParticipant) {
+      throw new BadRequestException(
+        'Only the assigned barber can mark this appointment as completed',
+      );
+    }
+
+    // Update appointment state
+    appointment.state = 'completed';
+    await this.appointmentRepository.save(appointment);
+
+    return appointment;
+  }
+
   // ==================== NOTIFICATION HELPERS ====================
 
   /**

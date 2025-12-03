@@ -102,6 +102,15 @@ export class AppointmentsController {
     return this.appointmentsService.cancelAppointment(userId!, appointmentId);
   }
 
+  @Patch('complete/:appointmentId')
+  completeAppointment(
+    @Req() request: CustomRequest,
+    @Param('appointmentId') appointmentId: string,
+  ) {
+    const userId = request.user?.id;
+    return this.appointmentsService.completeAppointment(userId!, appointmentId);
+  }
+
   @Get('barber/availability/:barberId')
   getBarberAvailability(
     @Param('barberId') barberId: string,

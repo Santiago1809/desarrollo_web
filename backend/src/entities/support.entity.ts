@@ -9,17 +9,26 @@ import { User } from './user.entity';
 
 @Entity()
 export class Support {
-  @PrimaryGeneratedColumn('identity')
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-  @Column()
+  @Column({ nullable: true })
+  subject: string;
+
+  @Column({ type: 'text' })
   description: string;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   reportDate: Date;
 
   @Column({ default: 'open', enum: ['open', 'in_progress', 'closed'] })
-  state: string;
+  state: 'open' | 'in_progress' | 'closed';
+
+  @Column({ type: 'text', nullable: true })
+  adminResponse: string;
+
+  @Column({ type: 'timestamp', nullable: true })
+  resolvedAt: Date;
 
   @ManyToOne(() => User, (user) => user.supports, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'usuarioId' })

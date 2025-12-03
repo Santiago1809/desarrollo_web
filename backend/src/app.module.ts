@@ -7,6 +7,8 @@ import { AuthModule } from './auth/auth.module';
 import { AppointmentsModule } from './appointments/appointments.module';
 import { ServicesModule } from './services/services.module';
 import { UsersModule } from './users/users.module';
+import { RatingsModule } from './ratings/ratings.module';
+import { SupportModule } from './support/support.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { RefreshTokenInterceptor } from './shared/interceptors/refresh-token/refresh-token.interceptor';
 import { JwtModule } from '@nestjs/jwt';
@@ -29,6 +31,9 @@ import { JwtModule } from '@nestjs/jwt';
         entities: ['dist/entities/*.entity.js'],
         synchronize: true,
         logger: 'formatted-console',
+        /* ssl: {
+          rejectUnauthorized: process.env.NODE_ENV === 'production',
+        }, */
       }),
     }),
     JwtModule.registerAsync({
@@ -42,6 +47,8 @@ import { JwtModule } from '@nestjs/jwt';
     AppointmentsModule,
     ServicesModule,
     UsersModule,
+    RatingsModule,
+    SupportModule,
   ],
   controllers: [AppController],
   providers: [
