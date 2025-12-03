@@ -9,6 +9,7 @@ import { ServicesModule } from './services/services.module';
 import { UsersModule } from './users/users.module';
 import { RatingsModule } from './ratings/ratings.module';
 import { SupportModule } from './support/support.module';
+import { SeedersModule } from './seeders/seeders.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { RefreshTokenInterceptor } from './shared/interceptors/refresh-token/refresh-token.interceptor';
 import { JwtModule } from '@nestjs/jwt';
@@ -49,6 +50,7 @@ import { JwtModule } from '@nestjs/jwt';
     UsersModule,
     RatingsModule,
     SupportModule,
+    SeedersModule,
   ],
   controllers: [AppController],
   providers: [
