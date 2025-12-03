@@ -93,6 +93,15 @@ export class AppointmentsController {
     return this.appointmentsService.rescheduleAppointment(userId!, data);
   }
 
+  @Patch('cancel/:appointmentId')
+  cancelAppointment(
+    @Req() request: CustomRequest,
+    @Param('appointmentId') appointmentId: string,
+  ) {
+    const userId = request.user?.id;
+    return this.appointmentsService.cancelAppointment(userId!, appointmentId);
+  }
+
   @Get('barber/availability/:barberId')
   getBarberAvailability(
     @Param('barberId') barberId: string,

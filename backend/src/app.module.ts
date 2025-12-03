@@ -5,6 +5,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { AppointmentsModule } from './appointments/appointments.module';
+import { ServicesModule } from './services/services.module';
+import { UsersModule } from './users/users.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { RefreshTokenInterceptor } from './shared/interceptors/refresh-token/refresh-token.interceptor';
 import { JwtModule } from '@nestjs/jwt';
@@ -38,6 +40,8 @@ import { JwtModule } from '@nestjs/jwt';
     }),
     AuthModule,
     AppointmentsModule,
+    ServicesModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [

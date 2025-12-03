@@ -12,7 +12,17 @@ import {
 } from '../dto/create-barber-date-schedule.dto';
 import { TimeUtils } from './time.utils';
 import { isBefore, startOfDay } from 'date-fns';
-import { TZDate } from '@date-fns/tz';
+
+const TIMEZONE = 'America/Bogota';
+
+/**
+ * Parses a date string (YYYY-MM-DD) to a Date object at noon to avoid timezone issues
+ */
+function parseDateString(dateStr: string): Date {
+  // Parse as local date at noon to avoid timezone shifts
+  const [year, month, day] = dateStr.split('-').map(Number);
+  return new Date(year, month - 1, day, 12, 0, 0);
+}
 
 @Injectable()
 export class BarberScheduleService {
@@ -125,8 +135,9 @@ export class BarberScheduleService {
       throw new BadRequestException('Barber not found');
     }
 
-    const scheduleDate = TZDate.tz('America/Bogota', schedule.date);
-    const today = startOfDay(TZDate.tz('America/Bogota'));
+    // Parse date string to avoid timezone issues
+    const scheduleDate = parseDateString(schedule.date);
+    const today = startOfDay(new Date());
 
     if (isBefore(scheduleDate, today)) {
       throw new BadRequestException('Cannot set schedule for past dates');

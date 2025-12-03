@@ -10,6 +10,9 @@
     "format": "biome format --write"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.90.11",
+    "axios": "^1.13.2",
+    "date-fns": "^4.1.0",
     "lucide-react": "^0.555.0",
     "next": "16.0.6",
     "react": "19.2.0",
@@ -18,6 +21,7 @@
   "devDependencies": {
     "@biomejs/biome": "2.2.0",
     "@tailwindcss/postcss": "^4",
+    "@types/date-fns": "^2.6.3",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

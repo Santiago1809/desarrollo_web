@@ -22,7 +22,7 @@ export class BarberBreakDto {
 
 export class CreateBarberDateScheduleDto {
   @IsDateString({}, { message: 'date must be a valid ISO 8601 date string' })
-  date: Date;
+  date: string;
 
   @IsBoolean({ message: 'isWorkDay must be a boolean' })
   @IsOptional()

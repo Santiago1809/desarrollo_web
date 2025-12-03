@@ -9,7 +9,7 @@ export class Service {
   @Column()
   name: string;
 
-  @Column()
+  @Column({ type: 'decimal' })
   duration: number;
 
   @Column({ type: 'decimal', precision: 10, scale: 2 })

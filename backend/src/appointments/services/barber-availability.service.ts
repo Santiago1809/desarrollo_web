@@ -6,6 +6,9 @@ import { User } from 'src/entities/user.entity';
 import { BarberScheduleService } from './barber-schedule.service';
 import { TimeUtils } from './time.utils';
 import { getDay } from 'date-fns';
+import { TZDate } from '@date-fns/tz';
+
+const TIMEZONE = 'America/Bogota';
 
 export interface AvailabilitySlot {
   time: string;
@@ -117,7 +120,8 @@ export class BarberAvailabilityService {
     const appointmentsByDate = new Map<string, Appointment[]>();
 
     for (const apt of appointments) {
-      const dateKey = new Date(apt.date).toISOString().split('T')[0];
+      const aptDate = new TZDate(apt.date, TIMEZONE);
+      const dateKey = `${aptDate.getFullYear()}-${String(aptDate.getMonth() + 1).padStart(2, '0')}-${String(aptDate.getDate()).padStart(2, '0')}`;
       if (!appointmentsByDate.has(dateKey)) {
         appointmentsByDate.set(dateKey, []);
       }
@@ -183,8 +187,10 @@ export class BarberAvailabilityService {
     appointmentsByDate: Map<string, Appointment[]>,
     slotDurationMinutes: number,
   ): DayAvailability {
-    const dateKey = date.toISOString().split('T')[0];
-    const dayOfWeek = getDay(date);
+    // Use TZDate to get the correct day of week in Colombia timezone
+    const tzDate = new TZDate(date, TIMEZONE);
+    const dateKey = `${tzDate.getFullYear()}-${String(tzDate.getMonth() + 1).padStart(2, '0')}-${String(tzDate.getDate()).padStart(2, '0')}`;
+    const dayOfWeek = getDay(tzDate);
 
     const { isWorkDay, workingHours, breaks } = this.getDayScheduleInfo(
       dateKey,
@@ -234,8 +240,9 @@ export class BarberAvailabilityService {
     breaks: { start: string; end: string; reason?: string }[];
   } {
     const dateSchedule = dateSchedules.find((ds) => {
-      const dsDate = new Date(ds.date).toISOString().split('T')[0];
-      return dsDate === dateKey;
+      const dsDate = new TZDate(ds.date, TIMEZONE);
+      const dsDateKey = `${dsDate.getFullYear()}-${String(dsDate.getMonth() + 1).padStart(2, '0')}-${String(dsDate.getDate()).padStart(2, '0')}`;
+      return dsDateKey === dateKey;
     });
 
     if (dateSchedule) {
@@ -295,7 +302,7 @@ export class BarberAvailabilityService {
     }
 
     const startMinutes = TimeUtils.timeToMinutes(workingHours.start);
-    const endMinutes = TimeUtils.timeToMinutes(workingHours.end);
+    const endMinutes = TimeUtils.timeToMinutes(workingHours.end, true); // true = isEndTime
 
     for (
       let minutes = startMinutes;
@@ -359,8 +366,9 @@ export class BarberAvailabilityService {
   private calculateAppointmentDurationMinutes(
     appointment: Appointment,
   ): number {
+    // Duration is already stored in minutes in the service entity
     return (appointment.services || []).reduce(
-      (sum, as) => sum + (as.service?.duration || 0) * 60,
+      (sum, as) => sum + (as.service?.duration || 0),
       0,
     );
   }

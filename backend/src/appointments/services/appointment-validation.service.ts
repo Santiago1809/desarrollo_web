@@ -27,7 +27,7 @@ export class AppointmentValidationService {
     barberId: string,
     date: Date,
     hour: string,
-    durationHours: number,
+    durationMinutes: number,
   ): Promise<void> {
     const dayOfWeek = getDay(date);
     const checkDate = startOfDay(date);
@@ -46,13 +46,13 @@ export class AppointmentValidationService {
           `Barber is not available on ${dateSchedule.note || 'this date'}`,
         );
       }
-      this.validateAgainstBreaks(hour, durationHours, dateSchedule.breaks);
+      this.validateAgainstBreaks(hour, durationMinutes, dateSchedule.breaks);
       await this.validateNoBarberConflictsWithLock(
         manager,
         barberId,
         date,
         hour,
-        durationHours,
+        durationMinutes,
       );
       return;
     }
@@ -73,7 +73,7 @@ export class AppointmentValidationService {
 
     this.validateTimeWithinSchedule(
       hour,
-      durationHours,
+      durationMinutes,
       schedule.startTime,
       schedule.endTime,
     );
@@ -83,7 +83,7 @@ export class AppointmentValidationService {
       barberId,
       date,
       hour,
-      durationHours,
+      durationMinutes,
     );
   }
 
@@ -95,11 +95,11 @@ export class AppointmentValidationService {
     barberId: string,
     date: Date,
     hour: string,
-    durationHours: number,
+    durationMinutes: number,
     excludeAppointmentId?: string,
   ): Promise<void> {
     const appointmentStartTime = TimeUtils.timeToMinutes(hour);
-    const appointmentEndTime = appointmentStartTime + durationHours * 60;
+    const appointmentEndTime = appointmentStartTime + durationMinutes;
 
     let query = manager
       .createQueryBuilder(Appointment, 'appointment')
@@ -137,9 +137,9 @@ export class AppointmentValidationService {
       const existingStartTime = TimeUtils.timeToMinutes(
         existingAppointment.hour,
       );
-      const existingDuration =
-        this.calculateAppointmentDuration(existingAppointment);
-      const existingEndTime = existingStartTime + existingDuration * 60;
+      const existingDurationMinutes =
+        this.calculateAppointmentDurationMinutes(existingAppointment);
+      const existingEndTime = existingStartTime + existingDurationMinutes;
 
       if (
         TimeUtils.hasTimeOverlap(
@@ -164,11 +164,11 @@ export class AppointmentValidationService {
     clientId: string,
     date: Date,
     hour: string,
-    durationHours: number,
+    durationMinutes: number,
     excludeAppointmentId?: string,
   ): Promise<void> {
     const appointmentStartTime = TimeUtils.timeToMinutes(hour);
-    const appointmentEndTime = appointmentStartTime + durationHours * 60;
+    const appointmentEndTime = appointmentStartTime + durationMinutes;
 
     let query = manager
       .createQueryBuilder(Appointment, 'appointment')
@@ -206,9 +206,9 @@ export class AppointmentValidationService {
       const existingStartTime = TimeUtils.timeToMinutes(
         existingAppointment.hour,
       );
-      const existingDuration =
-        this.calculateAppointmentDuration(existingAppointment);
-      const existingEndTime = existingStartTime + existingDuration * 60;
+      const existingDurationMinutes =
+        this.calculateAppointmentDurationMinutes(existingAppointment);
+      const existingEndTime = existingStartTime + existingDurationMinutes;
 
       if (
         TimeUtils.hasTimeOverlap(
@@ -219,7 +219,7 @@ export class AppointmentValidationService {
         )
       ) {
         throw new BadRequestException(
-          `You already have an appointment at ${existingAppointment.hour} on this date. Please wait until ${TimeUtils.getEndTime(existingAppointment.hour, existingDuration)} to book another appointment`,
+          `You already have an appointment at ${existingAppointment.hour} on this date. Please wait until ${TimeUtils.getEndTime(existingAppointment.hour, existingDurationMinutes)} to book another appointment`,
         );
       }
     }
@@ -286,7 +286,7 @@ export class AppointmentValidationService {
    */
   validateAgainstBreaks(
     hour: string,
-    durationHours: number,
+    durationMinutes: number,
     breaks?: BarberBreak[],
   ): void {
     if (!breaks || breaks.length === 0) {
@@ -294,7 +294,7 @@ export class AppointmentValidationService {
     }
 
     const appointmentStartTime = TimeUtils.timeToMinutes(hour);
-    const appointmentEndTime = appointmentStartTime + durationHours * 60;
+    const appointmentEndTime = appointmentStartTime + durationMinutes;
 
     for (const breakPeriod of breaks) {
       const breakStartTime = TimeUtils.timeToMinutes(breakPeriod.startTime);
@@ -320,14 +320,14 @@ export class AppointmentValidationService {
    */
   validateTimeWithinSchedule(
     hour: string,
-    durationHours: number,
+    durationMinutes: number,
     startTime: string,
     endTime: string,
   ): void {
     const appointmentStartTime = TimeUtils.timeToMinutes(hour);
-    const appointmentEndTime = appointmentStartTime + durationHours * 60;
+    const appointmentEndTime = appointmentStartTime + durationMinutes;
     const scheduleStartTime = TimeUtils.timeToMinutes(startTime);
-    const scheduleEndTime = TimeUtils.timeToMinutes(endTime);
+    const scheduleEndTime = TimeUtils.timeToMinutes(endTime, true); // true = isEndTime (handles 00:00 as 24:00)
 
     if (
       appointmentStartTime < scheduleStartTime ||
@@ -340,9 +340,11 @@ export class AppointmentValidationService {
   }
 
   /**
-   * Calculates total duration of an appointment in hours
+   * Calculates total duration of an appointment in minutes
    */
-  private calculateAppointmentDuration(appointment: Appointment): number {
+  private calculateAppointmentDurationMinutes(
+    appointment: Appointment,
+  ): number {
     return (appointment.services || []).reduce(
       (sum, appointmentService) =>
         sum + (appointmentService.service?.duration || 0),

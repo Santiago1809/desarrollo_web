@@ -15,11 +15,22 @@ export class TimeUtils {
   }
 
   /**
-   * Converts time string to minutes
+   * Converts time string to minutes (handles HH:mm and HH:mm:ss formats)
+   * Treats 00:00 as end of day (1440 minutes) when used as end time
    */
-  static timeToMinutes(time: string): number {
-    const [hours, minutes] = time.split(':').map(Number);
-    return hours * 60 + minutes;
+  static timeToMinutes(time: string, isEndTime: boolean = false): number {
+    // Handle both HH:mm and HH:mm:ss formats
+    const parts = time.split(':').map(Number);
+    const hours = parts[0];
+    const minutes = parts[1];
+    const result = hours * 60 + minutes;
+
+    // If it's an end time and equals 00:00, treat as 24:00 (end of day)
+    if (isEndTime && result === 0) {
+      return 1440; // 24 * 60
+    }
+
+    return result;
   }
 
   /**

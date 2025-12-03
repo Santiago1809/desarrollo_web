@@ -17,7 +17,7 @@ export class CreateAppointmentDto {
   barberId: string;
 
   @IsDateString({}, { message: 'date must be a valid ISO 8601 date string' })
-  date: Date;
+  date: string;
 
   @IsString({ message: 'hour must be a string' })
   @MinLength(1, { message: 'hour cannot be empty' })

@@ -18,6 +18,7 @@ import {
   AppointmentValidationService,
   BarberAvailabilityService,
 } from './services';
+import { NotificationsModule } from 'src/notifications/notifications.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import {
       }),
       inject: [ConfigService],
     }),
+    NotificationsModule,
   ],
   controllers: [AppointmentsController],
   providers: [

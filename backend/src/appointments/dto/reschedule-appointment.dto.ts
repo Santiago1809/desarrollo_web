@@ -5,7 +5,7 @@ export class RescheduleAppointmentDto {
   appointmentId: string;
 
   @IsDateString({}, { message: 'newDate must be a valid ISO 8601 date string' })
-  newDate: Date;
+  newDate: string;
 
   @IsString({ message: 'newHour must be a string' })
   @MinLength(1, { message: 'newHour cannot be empty' })
