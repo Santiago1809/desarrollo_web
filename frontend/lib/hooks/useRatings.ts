@@ -2,7 +2,10 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { ratingsService } from "../services/ratings.service";
-import type { CreateRatingRequest, UpdateRatingRequest } from "../types/ratings";
+import type {
+  CreateRatingRequest,
+  UpdateRatingRequest,
+} from "../types/ratings";
 
 // ==================== QUERIES ====================
 
@@ -43,7 +46,8 @@ export function useCreateRating() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: CreateRatingRequest) => ratingsService.createRating(data),
+    mutationFn: (data: CreateRatingRequest) =>
+      ratingsService.createRating(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["ratings"] });
       queryClient.invalidateQueries({ queryKey: ["appointments"] });

@@ -1,7 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { Menu, X, Scissors, User, LogOut, Calendar, HelpCircle } from "lucide-react";
+import {
+  Menu,
+  X,
+  Scissors,
+  User,
+  LogOut,
+  Calendar,
+  HelpCircle,
+} from "lucide-react";
 import Link from "next/link";
 import { useAuthContext } from "@/app/contexts/AuthContext";
 
@@ -49,6 +57,14 @@ function AuthButtons() {
             >
               <Calendar className="h-4 w-4" />
               Mis Citas
+            </Link>
+            <Link
+              href="/soporte"
+              onClick={() => setIsUserMenuOpen(false)}
+              className="w-full px-4 py-2 text-left text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 flex items-center gap-2"
+            >
+              <HelpCircle className="h-4 w-4" />
+              Soporte
             </Link>
             <button
               type="button"
@@ -112,6 +128,14 @@ function MobileAuthSection({ onClose }: MobileAuthSectionProps) {
         >
           <Calendar className="h-4 w-4" />
           Mis Citas
+        </Link>
+        <Link
+          href="/soporte"
+          onClick={onClose}
+          className="px-4 py-2 text-sm font-medium text-left text-zinc-700 dark:text-zinc-300 flex items-center gap-2"
+        >
+          <HelpCircle className="h-4 w-4" />
+          Soporte
         </Link>
         <button
           type="button"

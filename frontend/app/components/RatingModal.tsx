@@ -77,7 +77,9 @@ export default function RatingModal({
             <p className="text-gray-600">
               ¿Cómo fue tu experiencia con <strong>{barberName}</strong>?
             </p>
-            <p className="text-sm text-gray-500 mt-1">Servicio: {serviceName}</p>
+            <p className="text-sm text-gray-500 mt-1">
+              Servicio: {serviceName}
+            </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -146,7 +148,9 @@ export default function RatingModal({
                 disabled={rating === 0 || createRatingMutation.isPending}
                 className="flex-1 bg-amber-600 text-white px-4 py-2 rounded-lg hover:bg-amber-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {createRatingMutation.isPending ? "Enviando..." : "Enviar Calificación"}
+                {createRatingMutation.isPending
+                  ? "Enviando..."
+                  : "Enviar Calificación"}
               </button>
             </div>
           </form>

@@ -19,7 +19,9 @@ export const ratingsService = {
   },
 
   // Get ratings for a barber
-  getBarberRatings: async (barberId: string): Promise<BarberRatingsResponse> => {
+  getBarberRatings: async (
+    barberId: string
+  ): Promise<BarberRatingsResponse> => {
     const response = await api.get<BarberRatingsResponse>(
       `/ratings/barber/${barberId}`
     );

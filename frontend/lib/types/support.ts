@@ -1,5 +1,5 @@
 // Support Ticket Types
-export type TicketState = 'open' | 'in_progress' | 'closed';
+export type TicketState = "open" | "in_progress" | "closed";
 
 export interface SupportTicket {
   id: string;

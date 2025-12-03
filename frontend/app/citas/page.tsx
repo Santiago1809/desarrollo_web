@@ -748,7 +748,10 @@ export default function CitasPage() {
   };
 
   const handleCompleteAppointment = async (appointment: Appointment) => {
-    if (!confirm("¿Estás seguro de que deseas marcar esta cita como completada?")) return;
+    if (
+      !confirm("¿Estás seguro de que deseas marcar esta cita como completada?")
+    )
+      return;
     try {
       await completeAppointmentMutation.mutateAsync(appointment.id);
     } catch (error) {
@@ -854,10 +857,12 @@ export default function CitasPage() {
           onClose={() => setRatingAppointment(null)}
           appointmentId={ratingAppointment.id}
           barberName={
-            ratingAppointment.participants.find((p) => p.role === "barber")?.user?.name || "Barbero"
+            ratingAppointment.participants.find((p) => p.role === "barber")
+              ?.user?.name || "Barbero"
           }
           serviceName={
-            ratingAppointment.services.map((s) => s.service?.name).join(", ") || "Servicio"
+            ratingAppointment.services.map((s) => s.service?.name).join(", ") ||
+            "Servicio"
           }
         />
       )}

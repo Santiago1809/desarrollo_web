@@ -102,8 +102,7 @@ export default function SoportePage() {
         icon: <Clock className="h-3 w-3" />,
       },
       closed: {
-        color:
-          "bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-400",
+        color: "bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-400",
         label: "Cerrado",
         icon: <CheckCircle className="h-3 w-3" />,
       },
@@ -435,9 +434,9 @@ export default function SoportePage() {
                 ¿Cómo puedo cancelar mi cita?
               </h3>
               <p className="text-zinc-600 dark:text-zinc-400 text-sm">
-                Puedes cancelar tu cita desde la sección &quot;Mis Citas&quot;. Solo haz
-                clic en la cita que deseas cancelar y selecciona la opción
-                &quot;Cancelar&quot;.
+                Puedes cancelar tu cita desde la sección &quot;Mis Citas&quot;.
+                Solo haz clic en la cita que deseas cancelar y selecciona la
+                opción &quot;Cancelar&quot;.
               </p>
             </div>
             <div className="bg-white dark:bg-zinc-900 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-800 p-4 hover:shadow-md transition-shadow">
@@ -446,7 +445,8 @@ export default function SoportePage() {
               </h3>
               <p className="text-zinc-600 dark:text-zinc-400 text-sm">
                 Sí, puedes reprogramar tu cita siempre que sea antes de la hora
-                programada. Ve a &quot;Mis Citas&quot; y usa la opción de reprogramar.
+                programada. Ve a &quot;Mis Citas&quot; y usa la opción de
+                reprogramar.
               </p>
             </div>
             <div className="bg-white dark:bg-zinc-900 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-800 p-4 hover:shadow-md transition-shadow">
