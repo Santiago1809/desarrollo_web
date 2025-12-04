@@ -6,8 +6,8 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Appointment } from './appointment.entity';
-import { NotificationUser } from './notification-user.entity';
+import type { Appointment } from './appointment.entity';
+import type { NotificationUser } from './notification-user.entity';
 
 @Entity()
 export class Notification {
@@ -20,14 +20,11 @@ export class Notification {
   @Column()
   message: string;
 
-  @ManyToOne(() => Appointment, { onDelete: 'CASCADE' })
+  @ManyToOne('Appointment', { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'appointmentId' })
   appointment: Appointment;
 
-  @OneToMany(
-    () => NotificationUser,
-    (notificationUser) => notificationUser.notification,
-  )
+  @OneToMany('NotificationUser', 'notification')
   users: NotificationUser[];
 
   @Column({ type: 'timestamp' })

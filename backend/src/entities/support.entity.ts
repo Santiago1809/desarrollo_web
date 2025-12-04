@@ -5,7 +5,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { User } from './user.entity';
+import type { User } from './user.entity';
 
 @Entity()
 export class Support {
@@ -30,7 +30,7 @@ export class Support {
   @Column({ type: 'timestamp', nullable: true })
   resolvedAt: Date;
 
-  @ManyToOne(() => User, (user) => user.supports, { onDelete: 'CASCADE' })
+  @ManyToOne('User', 'supports', { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'usuarioId' })
   usuario: User;
 }

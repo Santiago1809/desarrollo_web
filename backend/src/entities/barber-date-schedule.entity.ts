@@ -6,15 +6,15 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { User } from './user.entity';
-import { BarberBreak } from './barber-break.entity';
+import type { User } from './user.entity';
+import type { BarberBreak } from './barber-break.entity';
 
 @Entity()
 export class BarberDateSchedule {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => User, { onDelete: 'CASCADE' })
+  @ManyToOne('User', { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'barberId' })
   barber: User;
 
@@ -27,7 +27,7 @@ export class BarberDateSchedule {
   @Column({ default: true })
   isWorkDay: boolean; // true = trabaja ese día, false = día no laboral
 
-  @OneToMany(() => BarberBreak, (barberBreak) => barberBreak.dateSchedule, {
+  @OneToMany('BarberBreak', 'dateSchedule', {
     cascade: true,
     eager: true,
   })

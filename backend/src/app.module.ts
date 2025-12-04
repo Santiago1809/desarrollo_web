@@ -13,6 +13,23 @@ import { SeedersModule } from './seeders/seeders.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { RefreshTokenInterceptor } from './shared/interceptors/refresh-token/refresh-token.interceptor';
 import { JwtModule } from '@nestjs/jwt';
+import {
+  Role,
+  User,
+  Service,
+  Appointment,
+  Support,
+  Subscription,
+  Inventory,
+  BarberSchedule,
+  BarberDateSchedule,
+  BarberBreak,
+  Notification,
+  NotificationUser,
+  AppointmentService,
+  AppointmentParticipant,
+  AppointmentRating,
+} from './entities';
 
 @Module({
   imports: [
@@ -29,12 +46,30 @@ import { JwtModule } from '@nestjs/jwt';
         username: configService.get<string>('DB_USER', 'dev_user'),
         password: configService.get<string>('DB_PASSWORD', ''),
         database: configService.get<string>('DB_NAME', ''),
-        entities: ['dist/entities/*.entity.js'],
-        synchronize: true,
-        logger: 'formatted-console',
-        ssl: {
-          rejectUnauthorized: false,
-        },
+        entities: [
+          Role,
+          User,
+          Support,
+          Subscription,
+          Appointment,
+          AppointmentService,
+          AppointmentParticipant,
+          AppointmentRating,
+          BarberSchedule,
+          BarberDateSchedule,
+          BarberBreak,
+          Inventory,
+          NotificationUser,
+          Notification,
+          Service,
+        ],
+        autoLoadEntities: true,
+        synchronize: configService.get<string>('DB_SYNC') === 'true',
+        logging: true,
+        ssl:
+          configService.get<string>('DB_SSL') === 'true'
+            ? { rejectUnauthorized: false }
+            : false,
       }),
     }),
     JwtModule.registerAsync({

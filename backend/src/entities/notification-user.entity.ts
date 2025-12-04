@@ -5,21 +5,21 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Notification } from './notification.entity';
-import { User } from './user.entity';
+import type { Notification } from './notification.entity';
+import type { User } from './user.entity';
 
 @Entity()
 export class NotificationUser {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => Notification, (notification) => notification.users, {
+  @ManyToOne('Notification', 'users', {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'notificationId' })
   notification: Notification;
 
-  @ManyToOne(() => User, (user) => user.notifications, {
+  @ManyToOne('User', 'notifications', {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'userId' })

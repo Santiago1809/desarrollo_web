@@ -5,14 +5,14 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { User } from './user.entity';
+import type { User } from './user.entity';
 
 @Entity()
 export class Inventory {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => User, (user) => user.inventory, { onDelete: 'CASCADE' })
+  @ManyToOne('User', 'inventory', { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId' })
   user: User;
 

@@ -5,14 +5,14 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { BarberDateSchedule } from './barber-date-schedule.entity';
+import type { BarberDateSchedule } from './barber-date-schedule.entity';
 
 @Entity()
 export class BarberBreak {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => BarberDateSchedule, (dateSchedule) => dateSchedule.breaks, {
+  @ManyToOne('BarberDateSchedule', 'breaks', {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'dateScheduleId' })

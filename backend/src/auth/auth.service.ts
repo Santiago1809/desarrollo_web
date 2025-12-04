@@ -3,7 +3,7 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { BcryptService } from 'src/utils/bcrypt.service';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from 'src/entities/user.entity';
+import { User } from 'src/entities';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 

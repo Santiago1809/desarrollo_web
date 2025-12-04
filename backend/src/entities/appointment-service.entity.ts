@@ -5,21 +5,21 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Appointment } from './appointment.entity';
-import { Service } from './service.entity';
+import type { Appointment } from './appointment.entity';
+import type { Service } from './service.entity';
 
 @Entity()
 export class AppointmentService {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => Appointment, (appointment) => appointment.services, {
+  @ManyToOne('Appointment', 'services', {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'appointmentId' })
   appointment: Appointment;
 
-  @ManyToOne(() => Service, (service) => service.appointmentServices, {
+  @ManyToOne('Service', 'appointmentServices', {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'serviceId' })
