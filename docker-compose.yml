@@ -1,4 +1,29 @@
 services:
+  # Nginx - Proxy inverso y balanceador de carga
+  nginx:
+    image: nginx:alpine
+    container_name: nginx_proxy
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - nginx_logs:/var/log/nginx
+    depends_on:
+      - backend_1
+      - backend_2
+      - backend_3
+      - frontend_1
+      - frontend_2
+    networks:
+      - backend_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "nginx", "-t"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Base de datos PostgreSQL
   db:
     image: postgres:16-alpine
     container_name: postgres_db
@@ -18,9 +43,10 @@ services:
       timeout: 5s
       retries: 5
 
-  backend:
+  # Backend - Instancia 1
+  backend_1:
     build: ./backend
-    container_name: backend_service
+    container_name: backend_1
     environment:
       DB_HOST: db
       DB_PORT: 5432
@@ -28,25 +54,91 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}
       DB_NAME: ${DB_NAME}
       DB_SYNC: "true"
-    ports:
-      - "3001:3001"
+      INSTANCE_ID: "backend_1"
+    expose:
+      - "3001"
     depends_on:
       db:
         condition: service_healthy
     networks:
       - backend_network
+    restart: unless-stopped
 
-  frontend:
-    build: ./frontend
-    container_name: frontend_service
+  # Backend - Instancia 2
+  backend_2:
+    build: ./backend
+    container_name: backend_2
     environment:
-      NEXT_PUBLIC_BACKEND_URL: http://backend:3001
-    ports:
-      - "3000:3000"
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      DB_SYNC: "false"
+      INSTANCE_ID: "backend_2"
+    expose:
+      - "3001"
     depends_on:
-      - backend
+      db:
+        condition: service_healthy
+      backend_1:
+        condition: service_started
     networks:
       - backend_network
+    restart: unless-stopped
+
+  # Backend - Instancia 3
+  backend_3:
+    build: ./backend
+    container_name: backend_3
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      DB_SYNC: "false"
+      INSTANCE_ID: "backend_3"
+    expose:
+      - "3001"
+    depends_on:
+      db:
+        condition: service_healthy
+      backend_1:
+        condition: service_started
+    networks:
+      - backend_network
+    restart: unless-stopped
+
+  # Frontend - Instancia 1
+  frontend_1:
+    build:
+      context: ./frontend
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost/api
+    container_name: frontend_1
+    expose:
+      - "3000"
+    depends_on:
+      - backend_1
+    networks:
+      - backend_network
+    restart: unless-stopped
+
+  # Frontend - Instancia 2
+  frontend_2:
+    build:
+      context: ./frontend
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost/api
+    container_name: frontend_2
+    expose:
+      - "3000"
+    depends_on:
+      - backend_1
+    networks:
+      - backend_network
+    restart: unless-stopped
 
 networks:
   backend_network:
@@ -54,3 +146,4 @@ networks:
 
 volumes:
   postgres_data:
+  nginx_logs:

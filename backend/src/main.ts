@@ -8,12 +8,24 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.enableCors({
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'X-Requested-With',
+      'Accept',
+      'Origin',
+    ],
     origin: [
+      'http://localhost',
+      'http://localhost:80',
       'http://localhost:3000',
+      'http://nginx',
+      'http://nginx:80',
+      'http://frontend_1:3000',
+      'http://frontend_2:3000',
       'https://desarrollo-web-hazel.vercel.app',
     ],
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
     exposedHeaders: [
       'Authorization',
